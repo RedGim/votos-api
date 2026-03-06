@@ -62,13 +62,23 @@ def statistics(db: Session = Depends(get_db)):
     names = []
     votes = []
 
-    for c in candidates:
+ for c in candidates:
         names.append(c.name)
         votes.append(c.votes)
 
+    total_votes = sum(votes)
+
+    percentages = []
+    for v in votes:
+        if total_votes == 0:
+            percentages.append(0)
+        else:
+            percentages.append(round((v / total_votes) * 100, 2))
+
     data = {
         "candidate": names,
-        "votes": votes
+        "votes": votes,
+        "percentage": percentages
     }
 
     df = pd.DataFrame(data)
@@ -79,3 +89,4 @@ def statistics(db: Session = Depends(get_db)):
     plt.savefig("votes_chart.png")
 
     return data
+
